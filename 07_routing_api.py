@@ -75,6 +75,92 @@ def haversine_m(lat1, lon1, lat2, lon2) -> float:
     return 2 * R * math.asin(math.sqrt(a))
 
 
+def bearing_deg(lat1, lon1, lat2, lon2) -> float:
+    """Compass bearing (0-360, 0=North) from point 1 to point 2."""
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    d_lambda = math.radians(lon2 - lon1)
+    x = math.sin(d_lambda) * math.cos(phi2)
+    y = math.cos(phi1) * math.sin(phi2) - math.sin(phi1) * math.cos(phi2) * math.cos(d_lambda)
+    return (math.degrees(math.atan2(x, y)) + 360) % 360
+
+
+def turn_instruction(bearing_in: float, bearing_out: float) -> str:
+    """Classifies a heading change into a human turn instruction.
+    Positive delta = turning right, negative = turning left (compass bearings)."""
+    delta = (bearing_out - bearing_in + 540) % 360 - 180  # normalize to -180..180
+
+    if abs(delta) < 15:
+        return "Continue straight"
+    elif delta >= 15 and delta < 45:
+        return "Turn slightly right"
+    elif delta >= 45 and delta < 135:
+        return "Turn right"
+    elif delta >= 135:
+        return "Make a U-turn"
+    elif delta <= -15 and delta > -45:
+        return "Turn slightly left"
+    elif delta <= -45 and delta > -135:
+        return "Turn left"
+    else:
+        return "Make a U-turn"
+
+
+def build_turn_by_turn(G, node_path: list) -> list:
+    """
+    Walks the node path and emits one instruction per meaningful change --
+    either a turn (heading change >= 15 degrees) or a street name change.
+    Consecutive nodes on the same straight street get merged into one step
+    with accumulated distance, rather than one instruction per intersection
+    (which would be unusable -- a real route can cross dozens of minor
+    intersections on the same street).
+    """
+    if len(node_path) < 2:
+        return []
+
+    coords = [(float(G.nodes[n]["y"]), float(G.nodes[n]["x"])) for n in node_path]
+
+    def edge_name_at(i):
+        edge_data = G.get_edge_data(node_path[i], node_path[i + 1])
+        best = min(edge_data.values(), key=lambda d: d.get("time_s", float("inf")))
+        return _edge_name(best) or "unnamed road"
+
+    steps = []
+    current_name = edge_name_at(0)
+    current_distance = haversine_m(*coords[0], *coords[1])
+    current_instruction = "Head out"
+
+    for i in range(1, len(coords) - 1):
+        bearing_in = bearing_deg(*coords[i - 1], *coords[i])
+        bearing_out = bearing_deg(*coords[i], *coords[i + 1])
+        seg_distance = haversine_m(*coords[i], *coords[i + 1])
+        next_name = edge_name_at(i)
+
+        instruction = turn_instruction(bearing_in, bearing_out)
+        name_changed = next_name != current_name
+        real_turn = instruction != "Continue straight"
+
+        if real_turn or name_changed:
+            steps.append({
+                "instruction": current_instruction,
+                "street_name": current_name,
+                "distance_m": round(current_distance),
+            })
+            current_instruction = instruction if real_turn else "Continue straight"
+            current_name = next_name
+            current_distance = seg_distance
+        else:
+            current_distance += seg_distance
+
+    steps.append({
+        "instruction": current_instruction,
+        "street_name": current_name,
+        "distance_m": round(current_distance),
+    })
+    steps.append({"instruction": "Arrive at destination", "street_name": None, "distance_m": 0})
+
+    return steps
+
+
 def _edge_name(data: dict):
     name = data.get("name")
     if isinstance(name, list):
@@ -192,6 +278,38 @@ class RouteRequest(BaseModel):
     destination: LatLng
 
 
+@app.get("/health")
+def health():
+    """
+    Used by docker-compose's healthcheck (and anyone else polling for
+    readiness). Distinguishes three states rather than a flat 200/500:
+      - graph not loaded yet (still starting up)          -> 503
+      - graph loaded, edge_weights.json missing/never seen -> 200, degraded=true
+        (this is normal for the first ~30-60s after startup)
+      - graph loaded, weights present                      -> 200, degraded=false
+    """
+    if G is None:
+        raise HTTPException(503, "road graph not loaded yet")
+
+    weights_age_s = None
+    if os.path.exists(WEIGHTS_PATH):
+        try:
+            with open(WEIGHTS_PATH) as f:
+                data = json.load(f)
+            updated_at = datetime.fromisoformat(data["updated_at"])
+            weights_age_s = (datetime.now(timezone.utc) - updated_at).total_seconds()
+        except (json.JSONDecodeError, OSError, KeyError, ValueError):
+            pass  # treat as "no weights yet" rather than failing health
+
+    return {
+        "status": "ok",
+        "nodes": G.number_of_nodes(),
+        "edges": G.number_of_edges(),
+        "weights_age_seconds": weights_age_s,
+        "degraded": weights_age_s is None,
+    }
+
+
 @app.post("/login")
 def login(req: LoginRequest):
     username = req.username.strip()
@@ -240,6 +358,7 @@ def route(req: RouteRequest):
             raise HTTPException(404, "no route found between these points")
 
         coords = [[float(G.nodes[n]["y"]), float(G.nodes[n]["x"])] for n in node_path]
+        steps = build_turn_by_turn(G, node_path)
 
         eta_seconds = 0.0
         distance_m = 0.0
@@ -253,6 +372,7 @@ def route(req: RouteRequest):
 
     return {
         "path": coords,
+        "steps": steps,
         "eta_seconds": round(eta_seconds),
         "distance_m": round(distance_m),
     }

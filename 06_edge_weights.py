@@ -64,6 +64,7 @@ def write_json_atomic(path: str, data: dict) -> None:
     with os.fdopen(fd, "w") as f:
         json.dump(data, f, indent=2)
     os.replace(tmp_path, path)  # atomic on POSIX -- readers never see a partial file
+    os.chmod(path, 0o644)
 
 
 def make_batch_writer():

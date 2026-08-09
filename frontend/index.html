@@ -2,105 +2,411 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TransitPulse-lite: Pune Routing (Test)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TransitPulse-lite — Pune Routing</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  html, body { margin: 0; height: 100%; font-family: -apple-system, Segoe UI, Roboto, sans-serif; }
+  :root {
+    --void:      #0A0F1A;
+    --surface:   #121A2B;
+    --surface-2: #1A2438;
+    --line:      #26314A;
+    --text:      #ECEFF5;
+    --text-dim:  #8B96AC;
+    --amber:     #F5A623;
+    --amber-dim: #C7861A;
+    --teal:      #35C8B0;
+    --red:       #E5533D;
+    --font-ui:   'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --safe-b:    env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; font-family: var(--font-body); background: var(--void); color: var(--text); }
+  button, input { font-family: inherit; }
+
+  ::selection { background: var(--amber); color: var(--void); }
+
+  :focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; border-radius: 4px; }
+
+  /* ---------- Login ---------- */
   #login-screen {
     height: 100%; display: flex; align-items: center; justify-content: center;
-    background: #1a2634;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(53,200,176,0.10), transparent 40%),
+      radial-gradient(circle at 80% 75%, rgba(245,166,35,0.10), transparent 45%),
+      var(--void);
+    padding: 24px;
   }
   #login-box {
-    background: white; padding: 32px; border-radius: 12px; width: 280px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    background: var(--surface); border: 1px solid var(--line);
+    padding: 36px 32px; border-radius: 16px; width: 100%; max-width: 340px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
-  #login-box h2 { margin-top: 0; font-size: 18px; }
+  .login-mark {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--amber), var(--amber-dim));
+    display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
+  }
+  #login-box h1 {
+    font-family: var(--font-ui); font-size: 21px; font-weight: 700; margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  #login-box .tagline { font-size: 13px; color: var(--text-dim); margin: 0 0 24px; }
+  #login-box label { font-size: 12px; color: var(--text-dim); display: block; margin-bottom: 6px; }
   #login-box input {
-    width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box;
-    border: 1px solid #ccc; border-radius: 6px; font-size: 14px;
+    width: 100%; padding: 13px 14px; box-sizing: border-box; font-size: 16px;
+    border: 1px solid var(--line); border-radius: 10px; background: var(--void); color: var(--text);
   }
-  #login-box button, .primary-btn {
-    width: 100%; padding: 10px; background: #2563eb; color: white; border: none;
-    border-radius: 6px; font-size: 14px; cursor: pointer; margin-top: 4px;
+  #login-box input::placeholder { color: #5A6478; }
+  #login-box input:focus { border-color: var(--amber); }
+  .btn-primary {
+    width: 100%; padding: 13px; background: var(--amber); color: #1A1200; border: none;
+    font-family: var(--font-ui); font-weight: 600; font-size: 14px;
+    border-radius: 10px; cursor: pointer; margin-top: 14px; transition: background 0.15s;
   }
-  #login-box button:hover, .primary-btn:hover { background: #1d4ed8; }
-  #app { display: none; height: 100%; flex-direction: column; }
+  .btn-primary:hover { background: #FFB84D; }
+  .btn-primary:active { transform: translateY(1px); }
+  #login-error { font-size: 12px; margin-top: 10px; color: var(--red); min-height: 14px; }
+
+  /* ---------- App shell ---------- */
+  #app { display: none; height: 100%; position: relative; }
+  #map { position: absolute; inset: 0; background: #0A0F1A; }
+  .leaflet-tile { filter: saturate(0.55) brightness(0.75) contrast(1.05); }
+  .leaflet-control-attribution { background: rgba(10,15,26,0.75) !important; color: var(--text-dim) !important; }
+  .leaflet-control-attribution a { color: var(--text-dim) !important; }
+  .leaflet-control-zoom a { background: var(--surface) !important; color: var(--text) !important; border-color: var(--line) !important; }
+
+  /* ---------- Top bar (floating) ---------- */
   #topbar {
-    padding: 10px 16px; background: #1a2634; color: white;
-    display: flex; align-items: center; gap: 12px; font-size: 14px;
+    position: absolute; top: 0; left: 0; right: 0; z-index: 900;
+    padding: max(14px, env(safe-area-inset-top)) 16px 0;
+    display: flex; align-items: center; gap: 10px; pointer-events: none;
   }
+  #topbar-pill {
+    pointer-events: auto;
+    background: rgba(18,26,43,0.85); backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 14px 8px 10px; display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-ui); font-size: 13px; font-weight: 600;
+  }
+  .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
   #topbar .spacer { flex: 1; }
-  #panel {
-    padding: 10px 16px; background: #f4f6f8; border-bottom: 1px solid #ddd;
-    display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px;
+  #whoami-pill {
+    pointer-events: auto; margin-left: auto;
+    background: rgba(18,26,43,0.85); backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 14px; font-size: 12px; color: var(--text-dim);
   }
-  #panel input[type=text] {
-    padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; width: 220px;
+
+  /* ---------- GPS dot ---------- */
+  .gps-dot-outer {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(53,200,176,0.25);
+    display: flex; align-items: center; justify-content: center;
+    animation: pulse-ring 2s ease-out infinite;
   }
-  #panel button {
-    padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; background: white;
-    cursor: pointer; font-size: 13px;
+  .gps-dot-inner { width: 12px; height: 12px; border-radius: 50%; background: var(--teal); border: 2px solid var(--void); }
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(53,200,176,0.35); }
+    70%  { box-shadow: 0 0 0 14px rgba(53,200,176,0); }
+    100% { box-shadow: 0 0 0 0 rgba(53,200,176,0); }
   }
-  #panel button.active { background: #2563eb; color: white; border-color: #2563eb; }
-  #map { flex: 1; }
+
+  /* ---------- Bottom sheet ---------- */
+  #sheet {
+    position: absolute; z-index: 1000; left: 0; right: 0; bottom: 0;
+    background: var(--surface); border-top: 1px solid var(--line);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -12px 40px rgba(0,0,0,0.45);
+    padding: 10px 16px calc(16px + var(--safe-b));
+    max-height: 62vh; overflow-y: auto;
+  }
+  #sheet-handle { width: 36px; height: 4px; border-radius: 4px; background: var(--line); margin: 0 auto 14px; }
+
+  .mode-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .mode-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 6px; background: var(--surface-2); border: 1px solid var(--line);
+    border-radius: 12px; color: var(--text-dim); cursor: pointer; font-size: 11px;
+    font-family: var(--font-ui); font-weight: 600; min-height: 56px; justify-content: center;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .mode-btn svg { width: 18px; height: 18px; }
+  .mode-btn.active { border-color: var(--amber); color: var(--amber); background: rgba(245,166,35,0.08); }
+  .mode-btn:hover { color: var(--text); }
+
+  .search-wrap { position: relative; margin-bottom: 12px; }
+  .search-wrap svg.search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; color: var(--text-dim); pointer-events: none;
+  }
+  #search-input {
+    width: 100%; padding: 12px 12px 12px 36px; font-size: 16px;
+    border: 1px solid var(--line); border-radius: 10px; background: var(--void); color: var(--text);
+  }
+  #search-input:focus { border-color: var(--amber); }
+  #search-input::placeholder { color: #5A6478; }
   #results {
-    position: absolute; z-index: 1000; background: white; border: 1px solid #ccc;
-    border-radius: 6px; max-width: 300px; margin-top: 4px; display: none;
-    max-height: 200px; overflow-y: auto;
+    position: absolute; z-index: 1200; left: 0; right: 0; top: calc(100% + 6px);
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px;
+    max-height: 220px; overflow-y: auto; display: none;
   }
-  #results div { padding: 8px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #eee; }
-  #results div:hover { background: #f0f4ff; }
-  #status { padding: 8px 16px; font-size: 13px; color: #444; background: #fff; border-top: 1px solid #eee; }
-  .error { color: #c0392b; }
+  #results div { padding: 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--line); }
+  #results div:last-child { border-bottom: none; }
+  #results div:hover { background: rgba(245,166,35,0.08); color: var(--amber); }
+
+  .action-row { display: flex; gap: 8px; }
+  .btn-cta {
+    flex: 1; padding: 13px; background: var(--amber); color: #1A1200; border: none;
+    font-family: var(--font-ui); font-weight: 600; font-size: 14px; border-radius: 10px; cursor: pointer;
+  }
+  .btn-cta:hover { background: #FFB84D; }
+  .btn-ghost {
+    padding: 13px 16px; background: transparent; color: var(--text-dim); border: 1px solid var(--line);
+    font-family: var(--font-ui); font-weight: 600; font-size: 13px; border-radius: 10px; cursor: pointer;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: var(--text-dim); }
+
+  .refresh-row {
+    display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 12px; color: var(--text-dim);
+  }
+  .refresh-row input { accent-color: var(--amber); width: 16px; height: 16px; }
+
+  /* ---------- Route summary ---------- */
+  #route-summary { display: none; margin-bottom: 12px; }
+  #route-summary .figs { display: flex; gap: 20px; align-items: baseline; margin-bottom: 4px; }
+  #route-summary .fig-num { font-family: var(--font-mono); font-size: 28px; font-weight: 600; color: var(--amber); }
+  #route-summary .fig-label { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); margin-left: 4px; }
+  #route-summary .fig-sep { width: 1px; height: 28px; background: var(--line); }
+  #route-updated { font-size: 11px; color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: blink 2s ease-in-out infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  /* ---------- Nav panel ---------- */
+  #nav-panel { display: none; }
+  #nav-panel.active { display: block; }
+  #nav-instruction {
+    font-family: var(--font-ui); font-size: 20px; font-weight: 700; letter-spacing: -0.01em;
+  }
+  #nav-substep {
+    font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); margin-top: 4px; margin-bottom: 14px;
+  }
+  #btn-stop-nav {
+    background: rgba(229,83,61,0.12); color: var(--red); border: 1px solid rgba(229,83,61,0.4);
+    padding: 11px; border-radius: 10px; cursor: pointer; font-size: 13px; font-family: var(--font-ui);
+    font-weight: 600; width: 100%;
+  }
+
+  #status-line { font-size: 12px; color: var(--text-dim); margin-top: 12px; line-height: 1.5; }
+  #status-line.error { color: var(--red); }
+
+  /* ---------- Desktop ---------- */
+  @media (min-width: 860px) {
+    #sheet {
+      left: 20px; bottom: 20px; right: auto; width: 340px; max-height: calc(100% - 100px);
+      border-radius: 16px; border: 1px solid var(--line);
+      padding: 18px 18px calc(18px + var(--safe-b));
+    }
+    #sheet-handle { display: none; }
+    #topbar { padding: 20px 20px 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gps-dot-outer, .live-dot { animation: none; }
+  }
 </style>
 </head>
 <body>
 
 <div id="login-screen">
   <div id="login-box">
-    <h2>TransitPulse-lite</h2>
-    <p style="font-size:13px;color:#666;margin-top:-8px;">Pune real-time routing (test build)</p>
-    <input type="text" id="username-input" placeholder="Enter a username" />
-    <button onclick="login()">Continue</button>
-    <div id="login-error" class="error" style="font-size:12px;margin-top:6px;"></div>
+    <div class="login-mark">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 17L10 7L14 13L20 5" stroke="#1A1200" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h1>TransitPulse-lite</h1>
+    <p class="tagline">Live-ish routing for Pune. Test build, 5-ish friends only.</p>
+    <label for="username-input">Username</label>
+    <input type="text" id="username-input" placeholder="whatever you go by" onkeydown="if(event.key==='Enter')login()" />
+    <button class="btn-primary" onclick="login()">Continue</button>
+    <div id="login-error"></div>
   </div>
 </div>
 
 <div id="app">
-  <div id="topbar">
-    <strong>TransitPulse-lite</strong>
-    <span class="spacer"></span>
-    <span id="whoami"></span>
-  </div>
-  <div id="panel">
-    <button id="btn-origin" onclick="setMode('origin')">Set Origin</button>
-    <button id="btn-dest" onclick="setMode('destination')">Set Destination</button>
-    <div style="position:relative;">
-      <input type="text" id="search-input" placeholder="Or type an address..." oninput="onSearchInput()" />
-      <div id="results"></div>
-    </div>
-    <button class="primary-btn" style="width:auto;" onclick="getRoute()">Get Route</button>
-    <button onclick="clearRoute()">Clear</button>
-    <label style="margin-left:8px;">
-      <input type="checkbox" id="auto-refresh" onchange="toggleAutoRefresh()" /> Auto-refresh (30s)
-    </label>
-  </div>
   <div id="map"></div>
-  <div id="status">Click "Set Origin", then click the map. Do the same for destination, then "Get Route".</div>
+
+  <div id="topbar">
+    <div id="topbar-pill"><span class="brand-dot"></span> TransitPulse-lite</div>
+    <div class="spacer"></div>
+    <div id="whoami-pill"></div>
+  </div>
+
+  <div id="sheet">
+    <div id="sheet-handle"></div>
+
+    <div id="planner-view">
+      <div class="mode-row">
+        <button class="mode-btn" id="btn-origin" onclick="setMode('origin')">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="2"/></svg>
+          Origin
+        </button>
+        <button class="mode-btn" id="btn-gps" onclick="useMyLocation()">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/></svg>
+          My Location
+        </button>
+        <button class="mode-btn" id="btn-dest" onclick="setMode('destination')">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9.5" r="2.2" stroke="currentColor" stroke-width="2"/></svg>
+          Destination
+        </button>
+      </div>
+
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="text" id="search-input" placeholder="Or search an address..." oninput="onSearchInput()" />
+        <div id="results"></div>
+      </div>
+
+      <div id="route-summary">
+        <div class="figs">
+          <div><span class="fig-num" id="fig-eta">--</span><span class="fig-label">MIN</span></div>
+          <div class="fig-sep"></div>
+          <div><span class="fig-num" id="fig-dist">--</span><span class="fig-label">KM</span></div>
+        </div>
+        <div id="route-updated"><span class="live-dot"></span><span id="route-updated-text">—</span></div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-cta" onclick="getRoute()">Get Route</button>
+        <button class="btn-ghost" onclick="clearRoute()">Clear</button>
+      </div>
+      <button id="btn-start-nav" class="btn-cta" style="display:none; margin-top:8px; background:var(--teal); color:#04231D;" onclick="startNavigation()">Start Navigation</button>
+
+      <label class="refresh-row">
+        <input type="checkbox" id="auto-refresh" onchange="toggleAutoRefresh()" />
+        Auto-refresh route every 30s
+      </label>
+
+      <div id="status-line">Tap "Origin", then tap the map — or use "My Location". Do the same for the destination, then Get Route.</div>
+    </div>
+
+    <div id="nav-panel">
+      <div id="nav-instruction">--</div>
+      <div id="nav-substep">--</div>
+      <button id="btn-stop-nav" onclick="stopNavigation()">Stop navigation</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   const API_BASE = ""; // same origin as this page
 
-  let map, originMarker, destMarker, routeLine;
+  let map, originMarker, destMarker, routeLine, gpsMarker;
   let mode = null; // 'origin' | 'destination' | null
   let origin = null, destination = null;
   let username = null;
   let autoRefreshTimer = null;
   let searchDebounce = null;
-  let searchTarget = null; // which pin the search result should set
+  let searchTarget = null;
+  let watchId = null;
+  let navigating = false;
+  let currentSteps = [];
+  let lastRerouteAt = 0;
+  const REROUTE_MIN_INTERVAL_MS = 15000;
+
+  function useMyLocation() {
+    if (!navigator.geolocation) {
+      setStatus("Geolocation isn't supported in this browser.", true);
+      return;
+    }
+    setStatus("Getting your location...");
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setOrigin(latitude, longitude, true);
+        map.setView([latitude, longitude], 15);
+        placeGpsMarker(latitude, longitude);
+        setStatus("Origin set from your location. Set a destination, then Get Route.");
+        startWatchingPosition();
+      },
+      (err) => {
+        // Common cause: page isn't served over HTTPS. Browsers block
+        // geolocation on plain http:// except on localhost.
+        setStatus(`Could not get your location: ${err.message}. (Needs HTTPS — plain http:// won't work here.)`, true);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  }
+
+  function startWatchingPosition() {
+    if (watchId !== null) return;
+    watchId = navigator.geolocation.watchPosition(
+      (pos) => onPositionUpdate(pos.coords.latitude, pos.coords.longitude),
+      (err) => console.warn("watchPosition error:", err.message),
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
+    );
+  }
+
+  function stopWatchingPosition() {
+    if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+  }
+
+  function placeGpsMarker(lat, lng) {
+    if (gpsMarker) { gpsMarker.setLatLng([lat, lng]); return; }
+    const icon = L.divIcon({
+      className: "", iconSize: [20, 20],
+      html: '<div class="gps-dot-outer"><div class="gps-dot-inner"></div></div>'
+    });
+    gpsMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000 }).addTo(map);
+  }
+
+  function onPositionUpdate(lat, lng) {
+    placeGpsMarker(lat, lng);
+    origin = { lat, lng };
+    if (navigating) { map.panTo([lat, lng]); maybeReroute(); }
+  }
+
+  function maybeReroute() {
+    const now = Date.now();
+    if (!destination || now - lastRerouteAt < REROUTE_MIN_INTERVAL_MS) return;
+    lastRerouteAt = now;
+    getRoute(true);
+  }
+
+  function startNavigation() {
+    if (!origin || !destination) {
+      setStatus("Set both an origin (ideally via My Location) and a destination first.", true);
+      return;
+    }
+    navigating = true;
+    document.getElementById("planner-view").style.display = "none";
+    document.getElementById("nav-panel").classList.add("active");
+    startWatchingPosition();
+    updateNavPanel();
+  }
+
+  function stopNavigation() {
+    navigating = false;
+    document.getElementById("nav-panel").classList.remove("active");
+    document.getElementById("planner-view").style.display = "block";
+    stopWatchingPosition();
+    setStatus("Navigation stopped.");
+  }
+
+  function updateNavPanel() {
+    if (!currentSteps.length) return;
+    const step = currentSteps[0];
+    document.getElementById("nav-instruction").textContent = step.instruction;
+    document.getElementById("nav-substep").textContent =
+      step.street_name ? `${step.street_name} · ${step.distance_m} m` : `${step.distance_m} m`;
+  }
 
   function login() {
     const input = document.getElementById("username-input");
@@ -117,23 +423,24 @@
       .then(r => { if (!r.ok) throw new Error("login failed"); return r.json(); })
       .then(data => {
         username = data.username;
-        document.getElementById("whoami").textContent = "Logged in as " + username;
+        document.getElementById("whoami-pill").textContent = username;
         document.getElementById("login-screen").style.display = "none";
-        document.getElementById("app").style.display = "flex";
+        document.getElementById("app").style.display = "block";
         initMap();
       })
-      .catch(() => { errorEl.textContent = "Could not log in -- is the backend running?"; });
+      .catch(() => { errorEl.textContent = "Could not log in — is the backend running?"; });
   }
 
   function initMap() {
-    map = L.map("map").setView([18.5204, 73.8567], 12); // Pune center
+    map = L.map("map", { zoomControl: false }).setView([18.5204, 73.8567], 12);
+    L.control.zoom({ position: "bottomright" }).addTo(map);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors"
     }).addTo(map);
 
     map.on("click", (e) => {
-      if (mode === "origin") { setOrigin(e.latlng.lat, e.latlng.lng); }
-      else if (mode === "destination") { setDestination(e.latlng.lat, e.latlng.lng); }
+      if (mode === "origin") setOrigin(e.latlng.lat, e.latlng.lng);
+      else if (mode === "destination") setDestination(e.latlng.lat, e.latlng.lng);
     });
   }
 
@@ -142,11 +449,12 @@
     document.getElementById("btn-origin").classList.toggle("active", m === "origin");
     document.getElementById("btn-dest").classList.toggle("active", m === "destination");
     searchTarget = m;
-    setStatus(`Click the map to set your ${m}, or use the search box.`);
+    setStatus(`Tap the map to set your ${m}, or use the search box.`);
   }
 
-  function setOrigin(lat, lng) {
+  function setOrigin(lat, lng, skipMarker) {
     origin = { lat, lng };
+    if (skipMarker) return;
     if (originMarker) map.removeLayer(originMarker);
     originMarker = L.marker([lat, lng], { title: "Origin" }).addTo(map).bindPopup("Origin").openPopup();
   }
@@ -161,7 +469,6 @@
     const q = document.getElementById("search-input").value;
     clearTimeout(searchDebounce);
     if (q.length < 3) { document.getElementById("results").style.display = "none"; return; }
-    // Nominatim's usage policy caps requests around 1/sec -- debounce keystrokes.
     searchDebounce = setTimeout(() => runSearch(q), 600);
   }
 
@@ -188,9 +495,9 @@
       });
   }
 
-  function getRoute() {
+  function getRoute(silent) {
     if (!origin || !destination) { setStatus("Set both an origin and a destination first.", true); return; }
-    setStatus("Finding the fastest route...");
+    if (!silent) setStatus("Finding the fastest route...");
 
     fetch(API_BASE + "/route", {
       method: "POST",
@@ -200,35 +507,52 @@
       .then(r => { if (!r.ok) throw new Error("routing failed"); return r.json(); })
       .then(data => {
         if (routeLine) map.removeLayer(routeLine);
-        routeLine = L.polyline(data.path, { color: "#2563eb", weight: 5 }).addTo(map);
-        map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+        routeLine = L.polyline(data.path, { color: "#F5A623", weight: 5, opacity: 0.9 }).addTo(map);
+        if (!silent) map.fitBounds(routeLine.getBounds(), { padding: [60, 60] });
+
+        currentSteps = data.steps || [];
+        if (currentSteps.length && !navigating) {
+          document.getElementById("btn-start-nav").style.display = "block";
+        }
+        if (navigating) updateNavPanel();
 
         const mins = Math.round(data.eta_seconds / 60);
         const km = (data.distance_m / 1000).toFixed(1);
-        setStatus(`Route found: ~${mins} min, ${km} km (updates as live traffic changes).`);
+        document.getElementById("fig-eta").textContent = mins;
+        document.getElementById("fig-dist").textContent = km;
+        document.getElementById("route-summary").style.display = "block";
+        document.getElementById("route-updated-text").textContent =
+          "Updated just now — based on the latest traffic weights";
+
+        if (!silent) setStatus("Route found. It'll shift as live traffic changes.");
       })
-      .catch(() => setStatus("Could not find a route between those points.", true));
+      .catch(() => { if (!silent) setStatus("Could not find a route between those points.", true); });
   }
 
   function clearRoute() {
     if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
     if (originMarker) { map.removeLayer(originMarker); originMarker = null; }
     if (destMarker) { map.removeLayer(destMarker); destMarker = null; }
-    origin = null; destination = null;
-    setStatus('Click "Set Origin", then click the map. Do the same for destination, then "Get Route".');
+    if (gpsMarker) { map.removeLayer(gpsMarker); gpsMarker = null; }
+    stopNavigation();
+    stopWatchingPosition();
+    currentSteps = [];
+    document.getElementById("btn-start-nav").style.display = "none";
+    document.getElementById("route-summary").style.display = "none";
+    document.getElementById("btn-origin").classList.remove("active");
+    document.getElementById("btn-dest").classList.remove("active");
+    origin = null; destination = null; mode = null;
+    setStatus('Tap "Origin", then tap the map — or use "My Location". Do the same for the destination, then Get Route.');
   }
 
   function toggleAutoRefresh() {
     const on = document.getElementById("auto-refresh").checked;
-    if (on) {
-      autoRefreshTimer = setInterval(() => { if (origin && destination) getRoute(); }, 30000);
-    } else {
-      clearInterval(autoRefreshTimer);
-    }
+    if (on) autoRefreshTimer = setInterval(() => { if (origin && destination) getRoute(true); }, 30000);
+    else clearInterval(autoRefreshTimer);
   }
 
   function setStatus(msg, isError) {
-    const el = document.getElementById("status");
+    const el = document.getElementById("status-line");
     el.textContent = msg;
     el.className = isError ? "error" : "";
   }

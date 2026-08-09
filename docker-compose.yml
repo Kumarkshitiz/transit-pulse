@@ -18,6 +18,15 @@ services:
       CLUSTER_ID: "w-ay37mhQY6_ZO7AAabacQ"
     volumes:
       - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      # Confirms the broker is actually accepting connections, not just
+      # that the container process started -- KRaft startup (controller
+      # quorum formation) takes a few seconds after the container is "up".
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:29092 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   app:
     build: .
@@ -43,7 +52,8 @@ services:
     working_dir: /app
     env_file: .env
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     restart: unless-stopped
     command: python 02_produce_to_kafka.py
 
@@ -55,8 +65,10 @@ services:
     working_dir: /app
     env_file: .env
     depends_on:
-      - kafka
-      - producer
+      kafka:
+        condition: service_healthy
+      producer:
+        condition: service_started
     restart: unless-stopped
     command: python 03_fake_data_generator.py
 
@@ -64,8 +76,10 @@ services:
     image: apache/spark:3.5.0
     container_name: tp_edge_weights
     depends_on:
-      - kafka
-      - generator
+      kafka:
+        condition: service_healthy
+      generator:
+        condition: service_started
     volumes:
       - ./:/opt/spark-apps
       - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
@@ -74,6 +88,18 @@ services:
     command: ["/opt/spark/bin/spark-submit",
               "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0",
               "06_edge_weights.py"]
+    healthcheck:
+      # Same staleness threshold as health_check_dag.py's freshness check --
+      # confirms the streaming job is actually still writing output, not
+      # just that the spark-submit process is alive (it can hang mid-stream
+      # without the process ever dying). Allows a long start_period since
+      # the job needs to pull the Kafka connector jar via Ivy on first run,
+      # then wait through its first trigger + watermark before the first write.
+      test: ["CMD-SHELL", "test $(( $(date +%s) - $(stat -c %Y docs/samples/edge_weights.json 2>/dev/null || echo 0) )) -lt 300"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
 
   api:
     build: .
@@ -83,12 +109,24 @@ services:
     working_dir: /app
     env_file: .env
     depends_on:
-      - kafka
-      - edge-weights
+      kafka:
+        condition: service_healthy
+      edge-weights:
+        condition: service_healthy
     ports:
       - "8000:8000"   # the link you send your 5 testers
     restart: unless-stopped
     command: python 07_routing_api.py
+    healthcheck:
+      # /health returns 503 until the road graph finishes loading (can take
+      # a while -- it's a real OSM graph). No curl in the python:3.11-slim
+      # base image, so this shells out with python itself instead of adding
+      # a package just for the healthcheck.
+      test: ["CMD-SHELL", "python -c \"import urllib.request as u; import sys; sys.exit(0 if u.urlopen('http://localhost:8000/health', timeout=3).status == 200 else 1)\" || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+      start_period: 60s
 
   # --- Ad-hoc Spark shell, kept for one-off jobs like 05_spark_streaming.py ---
 

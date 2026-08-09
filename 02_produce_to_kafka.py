@@ -145,6 +145,35 @@ def discover_additional_corridors() -> list:
     return discovered
 
 
+CORRIDOR_STATE_PATH = "docs/samples/corridor_state.json"
+
+
+def write_corridor_state(num_corridors: int, interval_seconds: int) -> None:
+    """
+    Persists the ACTUAL watched-corridor count and poll interval this run
+    settled on (base arterials + whatever auto-discovery found), so other
+    components -- specifically health_check_dag.py's TomTom quota check --
+    can read the real number instead of relying on a hand-maintained
+    constant that silently drifts whenever discovery finds a different
+    number of corridors or POLL_INTERVAL_SECONDS changes.
+
+    Written once at startup (the corridor list doesn't change mid-run).
+    Atomic write, same pattern as 06_edge_weights.py's output, so a
+    reader never sees a half-written file.
+    """
+    dir_name = os.path.dirname(CORRIDOR_STATE_PATH) or "."
+    os.makedirs(dir_name, exist_ok=True)
+    state = {
+        "corridor_count": num_corridors,
+        "poll_interval_seconds": interval_seconds,
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    tmp_path = CORRIDOR_STATE_PATH + ".tmp"
+    with open(tmp_path, "w") as f:
+        json.dump(state, f, indent=2)
+    os.replace(tmp_path, CORRIDOR_STATE_PATH)
+
+
 def check_rate_budget(num_corridors: int, interval_seconds: int) -> None:
     polls_per_day = 86400 / interval_seconds
     requests_per_day = polls_per_day * num_corridors
@@ -207,6 +236,9 @@ def main():
     print()
 
     check_rate_budget(len(watched_segments), POLL_INTERVAL_SECONDS)
+    write_corridor_state(len(watched_segments), POLL_INTERVAL_SECONDS)
+    print(f"Wrote corridor state ({len(watched_segments)} corridors, "
+          f"{POLL_INTERVAL_SECONDS}s interval) -> {CORRIDOR_STATE_PATH}\n")
 
     print(f"Connecting to Kafka at {KAFKA_BOOTSTRAP_SERVERS}...")
     producer = KafkaProducer(
