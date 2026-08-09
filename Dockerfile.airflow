@@ -1,0 +1,6 @@
+FROM apache/airflow:2.9.3
+
+COPY requirements.txt /requirements.txt
+# --user matches how the official image's own dependencies are installed
+# (as the non-root 'airflow' user) -- ~/.local/bin is already on PATH.
+RUN pip install --no-cache-dir -r /requirements.txt

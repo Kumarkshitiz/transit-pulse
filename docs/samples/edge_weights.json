@@ -1,0 +1,997 @@
+{
+  "updated_at": "2026-08-09T11:25:02.808196+00:00",
+  "batch_id": 197,
+  "citywide_ratio": 0.889,
+  "segments": {
+    "Hinjewadi Phase 1 - synthetic 00": {
+      "current_speed_kmh": 26.22,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.899,
+      "reading_count": 6
+    },
+    "Hinjawadi Phase 1 road": {
+      "current_speed_kmh": 25.3,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.867,
+      "reading_count": 6
+    },
+    "Rajiv Gandhi MIDC Road": {
+      "current_speed_kmh": 26.25,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.9,
+      "reading_count": 24
+    },
+    "Blue Ridge Road, Phase 1": {
+      "current_speed_kmh": 25.7,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.881,
+      "reading_count": 6
+    },
+    "Hinjewadi Phase 1 - synthetic 11": {
+      "current_speed_kmh": 26.33,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.903,
+      "reading_count": 6
+    },
+    "Marunji Road": {
+      "current_speed_kmh": 25.67,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.88,
+      "reading_count": 6
+    },
+    "Kharadi - EON IT Park - synthetic 11": {
+      "current_speed_kmh": 28.65,
+      "free_flow_speed_kmh": 30.83,
+      "ratio": 0.929,
+      "reading_count": 6
+    },
+    "Kharadi - EON IT Park - synthetic 17": {
+      "current_speed_kmh": 26.53,
+      "free_flow_speed_kmh": 30.83,
+      "ratio": 0.861,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 00": {
+      "current_speed_kmh": 24.27,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.899,
+      "reading_count": 6
+    },
+    "Pimple Saudagar-Pimpri Link Road": {
+      "current_speed_kmh": 24.19,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.896,
+      "reading_count": 42
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 12": {
+      "current_speed_kmh": 23.98,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.888,
+      "reading_count": 6
+    },
+    "Tanaji Malusare Path": {
+      "current_speed_kmh": 18.87,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.898,
+      "reading_count": 12
+    },
+    "Satara Road": {
+      "current_speed_kmh": 17.77,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.846,
+      "reading_count": 6
+    },
+    "Shivaji Road": {
+      "current_speed_kmh": 20.17,
+      "free_flow_speed_kmh": 22.5,
+      "ratio": 0.896,
+      "reading_count": 12
+    },
+    "Jedhe Prasad Road": {
+      "current_speed_kmh": 18.73,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.892,
+      "reading_count": 6
+    },
+    "C. V. Joshi Marg": {
+      "current_speed_kmh": 19.04,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.907,
+      "reading_count": 12
+    },
+    "Chhatrapati Sambhaji Path": {
+      "current_speed_kmh": 18.87,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.898,
+      "reading_count": 6
+    },
+    "Bajirao Road": {
+      "current_speed_kmh": 18.64,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.888,
+      "reading_count": 12
+    },
+    "Nal Stop - synthetic 02": {
+      "current_speed_kmh": 23.12,
+      "free_flow_speed_kmh": 25.17,
+      "ratio": 0.919,
+      "reading_count": 6
+    },
+    "Nal Stop - synthetic 05": {
+      "current_speed_kmh": 22.17,
+      "free_flow_speed_kmh": 25.17,
+      "ratio": 0.881,
+      "reading_count": 6
+    },
+    "Bhakti Marg": {
+      "current_speed_kmh": 22.53,
+      "free_flow_speed_kmh": 25.17,
+      "ratio": 0.895,
+      "reading_count": 6
+    },
+    "Wakad Chowk - synthetic 07": {
+      "current_speed_kmh": 20.88,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.915,
+      "reading_count": 6
+    },
+    "Nashik Phata - Wakad BRTS": {
+      "current_speed_kmh": 20.97,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.918,
+      "reading_count": 6
+    },
+    "Baner Road - synthetic 02": {
+      "current_speed_kmh": 27.35,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.882,
+      "reading_count": 6
+    },
+    "Baner Road - synthetic 12": {
+      "current_speed_kmh": 27.53,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.888,
+      "reading_count": 6
+    },
+    "Viman Nagar - synthetic 03": {
+      "current_speed_kmh": 30.73,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.854,
+      "reading_count": 6
+    },
+    "Viman Nagar Road": {
+      "current_speed_kmh": 31.9,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.886,
+      "reading_count": 12
+    },
+    "Matchwel Factory Road | Christ College Road | Bethany Ashram Road": {
+      "current_speed_kmh": 32.18,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.894,
+      "reading_count": 12
+    },
+    "Viman Nagar - synthetic 07": {
+      "current_speed_kmh": 32.17,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.894,
+      "reading_count": 6
+    },
+    "Shivajinagar - synthetic 01": {
+      "current_speed_kmh": 21.12,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.88,
+      "reading_count": 6
+    },
+    "T Saheb KK Marg": {
+      "current_speed_kmh": 21.19,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.883,
+      "reading_count": 12
+    },
+    "Ganesh Path": {
+      "current_speed_kmh": 20.95,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.873,
+      "reading_count": 6
+    },
+    "Jangli Maharaj Path": {
+      "current_speed_kmh": 21.4,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.892,
+      "reading_count": 6
+    },
+    "Warje - synthetic 00": {
+      "current_speed_kmh": 44.7,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.894,
+      "reading_count": 6
+    },
+    "Gandhibhavan Road": {
+      "current_speed_kmh": 44.62,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.892,
+      "reading_count": 6
+    },
+    "Warje - synthetic 05": {
+      "current_speed_kmh": 43.85,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.877,
+      "reading_count": 6
+    },
+    "Warje - synthetic 08": {
+      "current_speed_kmh": 45.37,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.907,
+      "reading_count": 6
+    },
+    "Warje - synthetic 09": {
+      "current_speed_kmh": 45.45,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.909,
+      "reading_count": 6
+    },
+    "Warje - synthetic 11": {
+      "current_speed_kmh": 45.27,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.905,
+      "reading_count": 6
+    },
+    "Warje - synthetic 14": {
+      "current_speed_kmh": 45.13,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.903,
+      "reading_count": 6
+    },
+    "Warje - synthetic 16": {
+      "current_speed_kmh": 43.65,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.873,
+      "reading_count": 6
+    },
+    "Warje - synthetic 19": {
+      "current_speed_kmh": 44.97,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.899,
+      "reading_count": 6
+    },
+    "Sutarwadi Road": {
+      "current_speed_kmh": 28.98,
+      "free_flow_speed_kmh": 33.0,
+      "ratio": 0.878,
+      "reading_count": 12
+    },
+    "Riverside Road (tertiary) - synthetic 08": {
+      "current_speed_kmh": 18.43,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.878,
+      "reading_count": 6
+    },
+    "Khadki - Bopkhel New Road (residential) - synthetic 03": {
+      "current_speed_kmh": 35.27,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.86,
+      "reading_count": 6
+    },
+    "Khadki Bazar Road": {
+      "current_speed_kmh": 36.62,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.893,
+      "reading_count": 6
+    },
+    "Khadki Bazar-Vishrantwadi Road": {
+      "current_speed_kmh": 36.69,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.895,
+      "reading_count": 36
+    },
+    "Hinjewadi Phase 1 - synthetic 14": {
+      "current_speed_kmh": 26.28,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.901,
+      "reading_count": 6
+    },
+    "Hinjewadi Phase 1 - synthetic 19": {
+      "current_speed_kmh": 25.42,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.871,
+      "reading_count": 6
+    },
+    "Kharadi - EON IT Park - synthetic 01": {
+      "current_speed_kmh": 27.42,
+      "free_flow_speed_kmh": 30.83,
+      "ratio": 0.889,
+      "reading_count": 6
+    },
+    "Kharadi - EON IT Park - synthetic 03": {
+      "current_speed_kmh": 27.25,
+      "free_flow_speed_kmh": 30.83,
+      "ratio": 0.884,
+      "reading_count": 6
+    },
+    "Old Mundhwa Road": {
+      "current_speed_kmh": 27.53,
+      "free_flow_speed_kmh": 30.83,
+      "ratio": 0.893,
+      "reading_count": 42
+    },
+    "Kharadi - EON IT Park - synthetic 18": {
+      "current_speed_kmh": 26.5,
+      "free_flow_speed_kmh": 30.83,
+      "ratio": 0.859,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 11": {
+      "current_speed_kmh": 23.13,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.857,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 16": {
+      "current_speed_kmh": 24.37,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.902,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 17": {
+      "current_speed_kmh": 23.23,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.86,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 19": {
+      "current_speed_kmh": 24.8,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.919,
+      "reading_count": 6
+    },
+    "Veer Baji Pasalkar Path": {
+      "current_speed_kmh": 18.45,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.879,
+      "reading_count": 6
+    },
+    "Balaji Vishwanath Path": {
+      "current_speed_kmh": 18.59,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.885,
+      "reading_count": 30
+    },
+    "Swargate Junction - synthetic 09": {
+      "current_speed_kmh": 18.65,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.888,
+      "reading_count": 6
+    },
+    "Karve Road": {
+      "current_speed_kmh": 21.6,
+      "free_flow_speed_kmh": 24.12,
+      "ratio": 0.896,
+      "reading_count": 24
+    },
+    "Nanasaheb Kale Path": {
+      "current_speed_kmh": 21.04,
+      "free_flow_speed_kmh": 23.08,
+      "ratio": 0.912,
+      "reading_count": 12
+    },
+    "Bala Raut Path": {
+      "current_speed_kmh": 20.38,
+      "free_flow_speed_kmh": 23.08,
+      "ratio": 0.883,
+      "reading_count": 12
+    },
+    "Nal Stop - synthetic 08": {
+      "current_speed_kmh": 21.92,
+      "free_flow_speed_kmh": 25.17,
+      "ratio": 0.871,
+      "reading_count": 6
+    },
+    "Major K. G. Pawar Path": {
+      "current_speed_kmh": 20.97,
+      "free_flow_speed_kmh": 23.08,
+      "ratio": 0.908,
+      "reading_count": 12
+    },
+    "Nal Stop - synthetic 17": {
+      "current_speed_kmh": 21.7,
+      "free_flow_speed_kmh": 25.17,
+      "ratio": 0.862,
+      "reading_count": 6
+    },
+    "Wakad Road": {
+      "current_speed_kmh": 20.41,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.894,
+      "reading_count": 42
+    },
+    "Datta Mandir Road": {
+      "current_speed_kmh": 20.35,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.891,
+      "reading_count": 6
+    },
+    "Kaspate Vasti Road": {
+      "current_speed_kmh": 20.16,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.883,
+      "reading_count": 12
+    },
+    "Wakad Chowk - synthetic 10": {
+      "current_speed_kmh": 20.4,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.893,
+      "reading_count": 6
+    },
+    "Baner Road - synthetic 06": {
+      "current_speed_kmh": 28.12,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.907,
+      "reading_count": 6
+    },
+    "Baner Road - synthetic 07": {
+      "current_speed_kmh": 28.6,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.923,
+      "reading_count": 6
+    },
+    "Baner-Pashan Link Road": {
+      "current_speed_kmh": 28.42,
+      "free_flow_speed_kmh": 32.0,
+      "ratio": 0.888,
+      "reading_count": 12
+    },
+    "Viman Nagar Avenue 1": {
+      "current_speed_kmh": 31.57,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.877,
+      "reading_count": 6
+    },
+    "Sakore Nagar Road": {
+      "current_speed_kmh": 31.23,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.868,
+      "reading_count": 18
+    },
+    "Viman Nagar Avenue 2": {
+      "current_speed_kmh": 31.59,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.877,
+      "reading_count": 18
+    },
+    "Shivajinagar - synthetic 03": {
+      "current_speed_kmh": 21.83,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.91,
+      "reading_count": 6
+    },
+    "Omkareshwar Path": {
+      "current_speed_kmh": 22.01,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.917,
+      "reading_count": 12
+    },
+    "Mahanagarpalika Vidyalay Path": {
+      "current_speed_kmh": 22.02,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.917,
+      "reading_count": 6
+    },
+    "Madhavrao Shirole Path": {
+      "current_speed_kmh": 21.06,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.878,
+      "reading_count": 18
+    },
+    "Warje - synthetic 04": {
+      "current_speed_kmh": 45.6,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.912,
+      "reading_count": 6
+    },
+    "Warje - synthetic 06": {
+      "current_speed_kmh": 42.33,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.847,
+      "reading_count": 6
+    },
+    "Warje - synthetic 10": {
+      "current_speed_kmh": 43.08,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.862,
+      "reading_count": 6
+    },
+    "Pashan-Sus Road": {
+      "current_speed_kmh": 29.3,
+      "free_flow_speed_kmh": 33.0,
+      "ratio": 0.888,
+      "reading_count": 48
+    },
+    "Pashan-Bavdhan Road (secondary) - synthetic 08": {
+      "current_speed_kmh": 29.87,
+      "free_flow_speed_kmh": 33.0,
+      "ratio": 0.905,
+      "reading_count": 6
+    },
+    "Pashan-Bavdhan Road (secondary) - synthetic 11": {
+      "current_speed_kmh": 28.53,
+      "free_flow_speed_kmh": 33.0,
+      "ratio": 0.865,
+      "reading_count": 6
+    },
+    "Riverside Road (tertiary) - synthetic 02": {
+      "current_speed_kmh": 19.38,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.923,
+      "reading_count": 6
+    },
+    "Riverside Road (tertiary) - synthetic 04": {
+      "current_speed_kmh": 18.3,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.871,
+      "reading_count": 6
+    },
+    "Riverside Road (tertiary) - synthetic 11": {
+      "current_speed_kmh": 18.78,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.894,
+      "reading_count": 6
+    },
+    "Riverside Road (tertiary) - synthetic 16": {
+      "current_speed_kmh": 18.95,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.902,
+      "reading_count": 6
+    },
+    "Elphinstone Road": {
+      "current_speed_kmh": 36.34,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.886,
+      "reading_count": 24
+    },
+    "Khadki - Bopkhel New Road (residential) - synthetic 06": {
+      "current_speed_kmh": 37.98,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.926,
+      "reading_count": 6
+    },
+    "Khadki - Bopkhel New Road (residential) - synthetic 15": {
+      "current_speed_kmh": 35.42,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.864,
+      "reading_count": 6
+    },
+    "Hinjewadi Phase 1 - synthetic 01": {
+      "current_speed_kmh": 25.7,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.881,
+      "reading_count": 6
+    },
+    "Hinjewadi Phase 1 - synthetic 07": {
+      "current_speed_kmh": 26.18,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.898,
+      "reading_count": 6
+    },
+    "Hinjewadi Phase 1 - synthetic 09": {
+      "current_speed_kmh": 25.47,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.873,
+      "reading_count": 6
+    },
+    "Hinjewadi Phase 1 - synthetic 13": {
+      "current_speed_kmh": 26.27,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.901,
+      "reading_count": 6
+    },
+    "Hinjewadi Phase 1 - synthetic 17": {
+      "current_speed_kmh": 25.87,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.887,
+      "reading_count": 6
+    },
+    "Hinjewadi Phase 1 - synthetic 18": {
+      "current_speed_kmh": 26.37,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.904,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 15": {
+      "current_speed_kmh": 24.62,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.912,
+      "reading_count": 6
+    },
+    "Sarasnagar Siddhivanayak Society": {
+      "current_speed_kmh": 18.83,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.897,
+      "reading_count": 6
+    },
+    "Lokmanya Tilak Marg": {
+      "current_speed_kmh": 18.77,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.894,
+      "reading_count": 18
+    },
+    "Dr. Ketkar Path": {
+      "current_speed_kmh": 20.55,
+      "free_flow_speed_kmh": 23.08,
+      "ratio": 0.89,
+      "reading_count": 24
+    },
+    "Wakad Chowk - synthetic 14": {
+      "current_speed_kmh": 19.62,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.859,
+      "reading_count": 6
+    },
+    "Wakad Chowk - synthetic 17": {
+      "current_speed_kmh": 20.87,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.914,
+      "reading_count": 6
+    },
+    "Wakad Exit": {
+      "current_speed_kmh": 20.3,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.889,
+      "reading_count": 6
+    },
+    "Wakad Chowk - synthetic 19": {
+      "current_speed_kmh": 20.45,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.896,
+      "reading_count": 6
+    },
+    "Shankarao Gaikwad Path": {
+      "current_speed_kmh": 28.0,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.903,
+      "reading_count": 12
+    },
+    "Baner Road - synthetic 17": {
+      "current_speed_kmh": 27.18,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.877,
+      "reading_count": 6
+    },
+    "Baner Road - synthetic 18": {
+      "current_speed_kmh": 27.58,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.89,
+      "reading_count": 6
+    },
+    "New DP Road": {
+      "current_speed_kmh": 27.07,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.873,
+      "reading_count": 6
+    },
+    "Viman Nagar - synthetic 00": {
+      "current_speed_kmh": 31.57,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.877,
+      "reading_count": 6
+    },
+    "Anand Vidya Niketan High School Road": {
+      "current_speed_kmh": 32.62,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.906,
+      "reading_count": 18
+    },
+    "Sudhabhau Kelkar Path": {
+      "current_speed_kmh": 20.82,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.867,
+      "reading_count": 6
+    },
+    "Apte Path": {
+      "current_speed_kmh": 21.38,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.891,
+      "reading_count": 12
+    },
+    "Warje - synthetic 07": {
+      "current_speed_kmh": 43.12,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.862,
+      "reading_count": 6
+    },
+    "Lane Number 17": {
+      "current_speed_kmh": 44.12,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.882,
+      "reading_count": 6
+    },
+    "Warje - synthetic 13": {
+      "current_speed_kmh": 45.55,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.911,
+      "reading_count": 6
+    },
+    "Warje - synthetic 15": {
+      "current_speed_kmh": 43.83,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.877,
+      "reading_count": 6
+    },
+    "Warje - synthetic 17": {
+      "current_speed_kmh": 44.9,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.898,
+      "reading_count": 6
+    },
+    "Warje - synthetic 18": {
+      "current_speed_kmh": 42.63,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.853,
+      "reading_count": 6
+    },
+    "Pashan-Bavdhan Road": {
+      "current_speed_kmh": 29.2,
+      "free_flow_speed_kmh": 33.0,
+      "ratio": 0.885,
+      "reading_count": 24
+    },
+    "Sutarwadi-Pashan Link Road": {
+      "current_speed_kmh": 29.85,
+      "free_flow_speed_kmh": 33.0,
+      "ratio": 0.905,
+      "reading_count": 6
+    },
+    "Riverside Road (tertiary) - synthetic 06": {
+      "current_speed_kmh": 19.22,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.915,
+      "reading_count": 6
+    },
+    "Riverside Road (tertiary) - synthetic 07": {
+      "current_speed_kmh": 18.33,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.873,
+      "reading_count": 6
+    },
+    "Khadki - Bopkhel New Road (residential) - synthetic 05": {
+      "current_speed_kmh": 35.52,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.866,
+      "reading_count": 6
+    },
+    "Khadki - Bopkhel New Road (residential) - synthetic 14": {
+      "current_speed_kmh": 35.33,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.862,
+      "reading_count": 6
+    },
+    "Khadki - Bopkhel New Road (residential) - synthetic 18": {
+      "current_speed_kmh": 35.72,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.871,
+      "reading_count": 6
+    },
+    "Hinjawadi Phase 2 Road": {
+      "current_speed_kmh": 25.99,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.891,
+      "reading_count": 12
+    },
+    "Hinjewadi Phase 1 - synthetic 05": {
+      "current_speed_kmh": 25.27,
+      "free_flow_speed_kmh": 29.17,
+      "ratio": 0.866,
+      "reading_count": 6
+    },
+    "Kharadi Bypass": {
+      "current_speed_kmh": 27.18,
+      "free_flow_speed_kmh": 30.83,
+      "ratio": 0.882,
+      "reading_count": 24
+    },
+    "Nagar Road": {
+      "current_speed_kmh": 29.78,
+      "free_flow_speed_kmh": 33.42,
+      "ratio": 0.891,
+      "reading_count": 12
+    },
+    "Kharadi - EON IT Park - synthetic 08": {
+      "current_speed_kmh": 28.18,
+      "free_flow_speed_kmh": 30.83,
+      "ratio": 0.914,
+      "reading_count": 6
+    },
+    "Kharadi - EON IT Park - synthetic 15": {
+      "current_speed_kmh": 27.37,
+      "free_flow_speed_kmh": 30.83,
+      "ratio": 0.888,
+      "reading_count": 6
+    },
+    "Kharadi - EON IT Park - synthetic 19": {
+      "current_speed_kmh": 27.27,
+      "free_flow_speed_kmh": 30.83,
+      "ratio": 0.884,
+      "reading_count": 6
+    },
+    "Deluxe Road Hedgewar Path Kalewadi Road": {
+      "current_speed_kmh": 23.2,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.859,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 03": {
+      "current_speed_kmh": 24.33,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.901,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 07": {
+      "current_speed_kmh": 23.57,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.873,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 10": {
+      "current_speed_kmh": 23.97,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.888,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 14": {
+      "current_speed_kmh": 23.63,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.875,
+      "reading_count": 6
+    },
+    "Pune-Mumbai Rd (Pimpri-Chinchwad) - synthetic 18": {
+      "current_speed_kmh": 24.87,
+      "free_flow_speed_kmh": 27.0,
+      "ratio": 0.921,
+      "reading_count": 6
+    },
+    "Nal Stop - synthetic 03": {
+      "current_speed_kmh": 22.43,
+      "free_flow_speed_kmh": 25.17,
+      "ratio": 0.891,
+      "reading_count": 6
+    },
+    "Nal Stop - synthetic 07": {
+      "current_speed_kmh": 22.75,
+      "free_flow_speed_kmh": 25.17,
+      "ratio": 0.904,
+      "reading_count": 6
+    },
+    "Vishnushastri Chiplunkar Path": {
+      "current_speed_kmh": 20.62,
+      "free_flow_speed_kmh": 23.08,
+      "ratio": 0.893,
+      "reading_count": 48
+    },
+    "Nal Stop - synthetic 12": {
+      "current_speed_kmh": 23.08,
+      "free_flow_speed_kmh": 25.17,
+      "ratio": 0.917,
+      "reading_count": 6
+    },
+    "Wakad Chowk - synthetic 04": {
+      "current_speed_kmh": 20.0,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.876,
+      "reading_count": 6
+    },
+    "Wakad Chowk - synthetic 06": {
+      "current_speed_kmh": 20.2,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.885,
+      "reading_count": 6
+    },
+    "Wakad Chowk - synthetic 11": {
+      "current_speed_kmh": 19.88,
+      "free_flow_speed_kmh": 22.83,
+      "ratio": 0.871,
+      "reading_count": 6
+    },
+    "Gopal Hari Deshmukh Marg": {
+      "current_speed_kmh": 27.55,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.889,
+      "reading_count": 24
+    },
+    "Baner Road - synthetic 04": {
+      "current_speed_kmh": 27.55,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.889,
+      "reading_count": 6
+    },
+    "Someshwar Wadi Road": {
+      "current_speed_kmh": 27.78,
+      "free_flow_speed_kmh": 31.0,
+      "ratio": 0.896,
+      "reading_count": 30
+    },
+    "Central Lane": {
+      "current_speed_kmh": 31.7,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.881,
+      "reading_count": 6
+    },
+    "Small Road": {
+      "current_speed_kmh": 31.9,
+      "free_flow_speed_kmh": 36.0,
+      "ratio": 0.886,
+      "reading_count": 6
+    },
+    "Karandikar Road": {
+      "current_speed_kmh": 21.18,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.882,
+      "reading_count": 12
+    },
+    "Shivajinagar - synthetic 10": {
+      "current_speed_kmh": 22.12,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.922,
+      "reading_count": 6
+    },
+    "Shivajinagar - synthetic 18": {
+      "current_speed_kmh": 21.27,
+      "free_flow_speed_kmh": 24.0,
+      "ratio": 0.886,
+      "reading_count": 6
+    },
+    "NDA Road": {
+      "current_speed_kmh": 43.45,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.869,
+      "reading_count": 6
+    },
+    "Gandhibhavan Marg": {
+      "current_speed_kmh": 45.27,
+      "free_flow_speed_kmh": 50.0,
+      "ratio": 0.905,
+      "reading_count": 6
+    },
+    "Pashan-Bavdhan Road (secondary) - synthetic 15": {
+      "current_speed_kmh": 29.37,
+      "free_flow_speed_kmh": 33.0,
+      "ratio": 0.89,
+      "reading_count": 6
+    },
+    "Sai Chowk": {
+      "current_speed_kmh": 29.6,
+      "free_flow_speed_kmh": 33.0,
+      "ratio": 0.897,
+      "reading_count": 6
+    },
+    "Lalbahadur Shashtri Marg": {
+      "current_speed_kmh": 18.77,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.894,
+      "reading_count": 6
+    },
+    "Riverside Road (tertiary) - synthetic 19": {
+      "current_speed_kmh": 18.53,
+      "free_flow_speed_kmh": 21.0,
+      "ratio": 0.883,
+      "reading_count": 6
+    },
+    "Khadki - Bopkhel New Road (residential) - synthetic 02": {
+      "current_speed_kmh": 37.73,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.92,
+      "reading_count": 6
+    },
+    "Khadki - Bopkhel New Road (residential) - synthetic 04": {
+      "current_speed_kmh": 36.58,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.892,
+      "reading_count": 6
+    },
+    "Khadki - Bopkhel New Road (residential) - synthetic 10": {
+      "current_speed_kmh": 36.95,
+      "free_flow_speed_kmh": 41.0,
+      "ratio": 0.901,
+      "reading_count": 6
+    }
+  }
+}

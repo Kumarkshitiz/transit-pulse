@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TransitPulse-lite: Pune Routing (Test)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  html, body { margin: 0; height: 100%; font-family: -apple-system, Segoe UI, Roboto, sans-serif; }
+  #login-screen {
+    height: 100%; display: flex; align-items: center; justify-content: center;
+    background: #1a2634;
+  }
+  #login-box {
+    background: white; padding: 32px; border-radius: 12px; width: 280px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  #login-box h2 { margin-top: 0; font-size: 18px; }
+  #login-box input {
+    width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box;
+    border: 1px solid #ccc; border-radius: 6px; font-size: 14px;
+  }
+  #login-box button, .primary-btn {
+    width: 100%; padding: 10px; background: #2563eb; color: white; border: none;
+    border-radius: 6px; font-size: 14px; cursor: pointer; margin-top: 4px;
+  }
+  #login-box button:hover, .primary-btn:hover { background: #1d4ed8; }
+  #app { display: none; height: 100%; flex-direction: column; }
+  #topbar {
+    padding: 10px 16px; background: #1a2634; color: white;
+    display: flex; align-items: center; gap: 12px; font-size: 14px;
+  }
+  #topbar .spacer { flex: 1; }
+  #panel {
+    padding: 10px 16px; background: #f4f6f8; border-bottom: 1px solid #ddd;
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px;
+  }
+  #panel input[type=text] {
+    padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; width: 220px;
+  }
+  #panel button {
+    padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; background: white;
+    cursor: pointer; font-size: 13px;
+  }
+  #panel button.active { background: #2563eb; color: white; border-color: #2563eb; }
+  #map { flex: 1; }
+  #results {
+    position: absolute; z-index: 1000; background: white; border: 1px solid #ccc;
+    border-radius: 6px; max-width: 300px; margin-top: 4px; display: none;
+    max-height: 200px; overflow-y: auto;
+  }
+  #results div { padding: 8px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #eee; }
+  #results div:hover { background: #f0f4ff; }
+  #status { padding: 8px 16px; font-size: 13px; color: #444; background: #fff; border-top: 1px solid #eee; }
+  .error { color: #c0392b; }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div id="login-box">
+    <h2>TransitPulse-lite</h2>
+    <p style="font-size:13px;color:#666;margin-top:-8px;">Pune real-time routing (test build)</p>
+    <input type="text" id="username-input" placeholder="Enter a username" />
+    <button onclick="login()">Continue</button>
+    <div id="login-error" class="error" style="font-size:12px;margin-top:6px;"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div id="topbar">
+    <strong>TransitPulse-lite</strong>
+    <span class="spacer"></span>
+    <span id="whoami"></span>
+  </div>
+  <div id="panel">
+    <button id="btn-origin" onclick="setMode('origin')">Set Origin</button>
+    <button id="btn-dest" onclick="setMode('destination')">Set Destination</button>
+    <div style="position:relative;">
+      <input type="text" id="search-input" placeholder="Or type an address..." oninput="onSearchInput()" />
+      <div id="results"></div>
+    </div>
+    <button class="primary-btn" style="width:auto;" onclick="getRoute()">Get Route</button>
+    <button onclick="clearRoute()">Clear</button>
+    <label style="margin-left:8px;">
+      <input type="checkbox" id="auto-refresh" onchange="toggleAutoRefresh()" /> Auto-refresh (30s)
+    </label>
+  </div>
+  <div id="map"></div>
+  <div id="status">Click "Set Origin", then click the map. Do the same for destination, then "Get Route".</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const API_BASE = ""; // same origin as this page
+
+  let map, originMarker, destMarker, routeLine;
+  let mode = null; // 'origin' | 'destination' | null
+  let origin = null, destination = null;
+  let username = null;
+  let autoRefreshTimer = null;
+  let searchDebounce = null;
+  let searchTarget = null; // which pin the search result should set
+
+  function login() {
+    const input = document.getElementById("username-input");
+    const name = input.value.trim();
+    const errorEl = document.getElementById("login-error");
+    errorEl.textContent = "";
+    if (!name) { errorEl.textContent = "Enter a username."; return; }
+
+    fetch(API_BASE + "/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: name })
+    })
+      .then(r => { if (!r.ok) throw new Error("login failed"); return r.json(); })
+      .then(data => {
+        username = data.username;
+        document.getElementById("whoami").textContent = "Logged in as " + username;
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("app").style.display = "flex";
+        initMap();
+      })
+      .catch(() => { errorEl.textContent = "Could not log in -- is the backend running?"; });
+  }
+
+  function initMap() {
+    map = L.map("map").setView([18.5204, 73.8567], 12); // Pune center
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    map.on("click", (e) => {
+      if (mode === "origin") { setOrigin(e.latlng.lat, e.latlng.lng); }
+      else if (mode === "destination") { setDestination(e.latlng.lat, e.latlng.lng); }
+    });
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.getElementById("btn-origin").classList.toggle("active", m === "origin");
+    document.getElementById("btn-dest").classList.toggle("active", m === "destination");
+    searchTarget = m;
+    setStatus(`Click the map to set your ${m}, or use the search box.`);
+  }
+
+  function setOrigin(lat, lng) {
+    origin = { lat, lng };
+    if (originMarker) map.removeLayer(originMarker);
+    originMarker = L.marker([lat, lng], { title: "Origin" }).addTo(map).bindPopup("Origin").openPopup();
+  }
+
+  function setDestination(lat, lng) {
+    destination = { lat, lng };
+    if (destMarker) map.removeLayer(destMarker);
+    destMarker = L.marker([lat, lng], { title: "Destination" }).addTo(map).bindPopup("Destination").openPopup();
+  }
+
+  function onSearchInput() {
+    const q = document.getElementById("search-input").value;
+    clearTimeout(searchDebounce);
+    if (q.length < 3) { document.getElementById("results").style.display = "none"; return; }
+    // Nominatim's usage policy caps requests around 1/sec -- debounce keystrokes.
+    searchDebounce = setTimeout(() => runSearch(q), 600);
+  }
+
+  function runSearch(q) {
+    fetch(API_BASE + "/geocode?q=" + encodeURIComponent(q))
+      .then(r => r.json())
+      .then(results => {
+        const box = document.getElementById("results");
+        box.innerHTML = "";
+        if (!results.length) { box.style.display = "none"; return; }
+        results.forEach(r => {
+          const div = document.createElement("div");
+          div.textContent = r.label;
+          div.onclick = () => {
+            const target = searchTarget || "origin";
+            if (target === "origin") { setOrigin(r.lat, r.lng); map.setView([r.lat, r.lng], 15); }
+            else { setDestination(r.lat, r.lng); map.setView([r.lat, r.lng], 15); }
+            box.style.display = "none";
+            document.getElementById("search-input").value = r.label;
+          };
+          box.appendChild(div);
+        });
+        box.style.display = "block";
+      });
+  }
+
+  function getRoute() {
+    if (!origin || !destination) { setStatus("Set both an origin and a destination first.", true); return; }
+    setStatus("Finding the fastest route...");
+
+    fetch(API_BASE + "/route", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ origin, destination })
+    })
+      .then(r => { if (!r.ok) throw new Error("routing failed"); return r.json(); })
+      .then(data => {
+        if (routeLine) map.removeLayer(routeLine);
+        routeLine = L.polyline(data.path, { color: "#2563eb", weight: 5 }).addTo(map);
+        map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+
+        const mins = Math.round(data.eta_seconds / 60);
+        const km = (data.distance_m / 1000).toFixed(1);
+        setStatus(`Route found: ~${mins} min, ${km} km (updates as live traffic changes).`);
+      })
+      .catch(() => setStatus("Could not find a route between those points.", true));
+  }
+
+  function clearRoute() {
+    if (routeLine) { map.removeLayer(routeLine); routeLine = null; }
+    if (originMarker) { map.removeLayer(originMarker); originMarker = null; }
+    if (destMarker) { map.removeLayer(destMarker); destMarker = null; }
+    origin = null; destination = null;
+    setStatus('Click "Set Origin", then click the map. Do the same for destination, then "Get Route".');
+  }
+
+  function toggleAutoRefresh() {
+    const on = document.getElementById("auto-refresh").checked;
+    if (on) {
+      autoRefreshTimer = setInterval(() => { if (origin && destination) getRoute(); }, 30000);
+    } else {
+      clearInterval(autoRefreshTimer);
+    }
+  }
+
+  function setStatus(msg, isError) {
+    const el = document.getElementById("status");
+    el.textContent = msg;
+    el.className = isError ? "error" : "";
+  }
+</script>
+
+</body>
+</html>

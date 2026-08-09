@@ -1,0 +1,135 @@
+services:
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: tp_kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      CLUSTER_ID: "w-ay37mhQY6_ZO7AAabacQ"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  app:
+    build: .
+    container_name: tp_app
+    volumes:
+      - ./:/app
+    working_dir: /app
+    env_file: .env
+    depends_on:
+      - kafka
+    tty: true
+    # Kept around for ad-hoc/debug use (one-off scripts, manual checks) --
+    # the actual pipeline no longer depends on you exec-ing into this.
+    command: sleep infinity
+
+  # --- Always-on pipeline services, auto-start with `docker compose up -d` ---
+
+  producer:
+    build: .
+    container_name: tp_producer
+    volumes:
+      - ./:/app
+    working_dir: /app
+    env_file: .env
+    depends_on:
+      - kafka
+    restart: unless-stopped
+    command: python 02_produce_to_kafka.py
+
+  generator:
+    build: .
+    container_name: tp_generator
+    volumes:
+      - ./:/app
+    working_dir: /app
+    env_file: .env
+    depends_on:
+      - kafka
+      - producer
+    restart: unless-stopped
+    command: python 03_fake_data_generator.py
+
+  edge-weights:
+    image: apache/spark:3.5.0
+    container_name: tp_edge_weights
+    depends_on:
+      - kafka
+      - generator
+    volumes:
+      - ./:/opt/spark-apps
+      - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+    working_dir: /opt/spark-apps
+    restart: unless-stopped
+    command: ["/opt/spark/bin/spark-submit",
+              "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0",
+              "06_edge_weights.py"]
+
+  api:
+    build: .
+    container_name: tp_api
+    volumes:
+      - ./:/app
+    working_dir: /app
+    env_file: .env
+    depends_on:
+      - kafka
+      - edge-weights
+    ports:
+      - "8000:8000"   # the link you send your 5 testers
+    restart: unless-stopped
+    command: python 07_routing_api.py
+
+  # --- Ad-hoc Spark shell, kept for one-off jobs like 05_spark_streaming.py ---
+
+  spark:
+    image: apache/spark:3.5.0
+    container_name: tp_spark
+    depends_on:
+      - kafka
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/opt/spark-apps
+      - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+    working_dir: /opt/spark-apps
+    tty: true
+    command: tail -f /dev/null
+
+  # --- Airflow: scheduled health checks + weekly maintenance ONLY.
+  # It does not run/manage the always-on services above -- those are
+  # docker-compose's job via restart: unless-stopped. ---
+
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    container_name: tp_airflow
+    depends_on:
+      - kafka
+    ports:
+      - "8081:8080"   # 8080 is already taken by the spark service's UI
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./:/opt/airflow/project
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: admin
+    restart: unless-stopped
+    command: standalone
+
+volumes:
+  kafka_data:
