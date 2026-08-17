@@ -63,7 +63,7 @@ def write_json_atomic(path: str, data: dict) -> None:
     fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
     with os.fdopen(fd, "w") as f:
         json.dump(data, f, indent=2)
-    os.replace(tmp_path, path)  # atomic on POSIX -- readers never see a partial file
+    os.replace(tmp_path, path)  
     os.chmod(path, 0o644)
 
 
@@ -86,9 +86,7 @@ def make_batch_writer():
                 continue
 
             ratio = avg_current / avg_free
-            # If a segment appears in multiple windows within this batch,
-            # the later one (larger window end) simply overwrites -- fine
-            # for this use case, we only care about the most recent state.
+=
             segments[row["segment_name"]] = {
                 "current_speed_kmh": round(avg_current, 2),
                 "free_flow_speed_kmh": round(avg_free, 2),
@@ -138,8 +136,6 @@ def main():
         .selectExpr("CAST(value AS STRING) AS json_str")
         .select(from_json(col("json_str"), SCHEMA).alias("data"))
         .select("data.*")
-        # Only real OSM edges carry a segment_name worth keying weights on --
-        # jittered fallback records (on_real_road_segment=false) are skipped.
         .filter(col("on_real_road_segment") == True)
         .withColumn("event_time", col("ingested_at").cast("timestamp"))
     )
