@@ -46,13 +46,10 @@ WEIGHTS_REFRESH_SECONDS = 20
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 NOMINATIM_USER_AGENT = "transitpulse-lite-test/1.0 (student project, contact: set-your-email-here)"
 
-# Bounding box used for 04_pune_road_graph.py -- also used to bias geocoding
-# results toward Pune instead of matching a same-named place elsewhere.
+
 BBOX_WEST, BBOX_SOUTH, BBOX_EAST, BBOX_NORTH = 73.7300, 18.4700, 73.9500, 18.6350
 
-# Fallback speeds (km/h) by OSM highway tag, used when an edge has no
-# maxspeed AND no live weight override -- see the road-class coverage
-# discussion earlier in this project.
+
 DEFAULT_SPEED_KMH_BY_HIGHWAY = {
     "motorway": 80, "trunk": 60, "primary": 50,
     "secondary": 40, "tertiary": 30, "residential": 20,
@@ -87,7 +84,7 @@ def bearing_deg(lat1, lon1, lat2, lon2) -> float:
 def turn_instruction(bearing_in: float, bearing_out: float) -> str:
     """Classifies a heading change into a human turn instruction.
     Positive delta = turning right, negative = turning left (compass bearings)."""
-    delta = (bearing_out - bearing_in + 540) % 360 - 180  # normalize to -180..180
+    delta = (bearing_out - bearing_in + 540) % 360 - 180 
 
     if abs(delta) < 15:
         return "Continue straight"
@@ -187,7 +184,7 @@ def load_graph_with_default_weights() -> nx.MultiDiGraph:
         speed_kmh = DEFAULT_SPEED_KMH_BY_HIGHWAY.get(hwy, FALLBACK_SPEED_KMH)
         default_time_s = (length_m / 1000) / speed_kmh * 3600
         graph[u][v][k]["default_time_s"] = default_time_s
-        graph[u][v][k]["time_s"] = default_time_s  # live weight, refreshed periodically
+        graph[u][v][k]["time_s"] = default_time_s  
 
     print("Default weights computed.\n")
     return graph
@@ -206,11 +203,11 @@ def refresh_weights_from_file():
         with open(WEIGHTS_PATH, "r") as f:
             data = json.load(f)
     except (json.JSONDecodeError, OSError):
-        return  # caught it mid-write or similar transient issue -- try again next cycle
+        return 
 
     segments = data.get("segments", {})
     citywide_ratio = data.get("citywide_ratio", 1.0)
-    citywide_ratio = max(citywide_ratio, 0.1)  # guard against runaway travel-time blowup
+    citywide_ratio = max(citywide_ratio, 0.1)  
 
     updated_direct = 0
     with _graph_lock:
@@ -250,7 +247,7 @@ def astar_heuristic(u, v):
 app = FastAPI(title="TransitPulse-lite Routing API")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # fine for a 5-person test; tighten before wider use
+    allow_origins=["*"],  
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -299,8 +296,7 @@ def health():
             updated_at = datetime.fromisoformat(data["updated_at"])
             weights_age_s = (datetime.now(timezone.utc) - updated_at).total_seconds()
         except (json.JSONDecodeError, OSError, KeyError, ValueError):
-            pass  # treat as "no weights yet" rather than failing health
-
+            pass  
     return {
         "status": "ok",
         "nodes": G.number_of_nodes(),
@@ -316,7 +312,6 @@ def login(req: LoginRequest):
     if not username:
         raise HTTPException(400, "username cannot be empty")
     _known_users.add(username)
-    # Trivial "token" -- see the auth note in the module docstring.
     return {"token": username, "username": username}
 
 
@@ -363,8 +358,7 @@ def route(req: RouteRequest):
         eta_seconds = 0.0
         distance_m = 0.0
         for a, b in zip(node_path[:-1], node_path[1:]):
-            # A node pair can have multiple parallel edges (MultiDiGraph) --
-            # take the fastest one, matching what astar_path itself does.
+
             edge_options = G.get_edge_data(a, b)
             best = min(edge_options.values(), key=lambda d: d.get("time_s", float("inf")))
             eta_seconds += best.get("time_s", 0)
@@ -378,8 +372,6 @@ def route(req: RouteRequest):
     }
 
 
-# Serves frontend/index.html at "/" and any other static assets in that
-# folder. Registered LAST so it doesn't shadow the API routes above.
 if os.path.isdir("frontend"):
     app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
