@@ -49,12 +49,11 @@ SOURCE_TOPIC = "traffic-raw"
 DEST_TOPIC = "traffic-enriched"
 CONSUMER_GROUP = "fake-data-generator"
 
-SYNTHETIC_PER_SEGMENT = 20   # spatial expansion: fake nearby segments per real reading
+SYNTHETIC_PER_SEGMENT = 20 
 FIRE_INTERVAL_SECONDS = int(os.getenv("GENERATOR_FIRE_INTERVAL_SECONDS", "10"))
 
 GRAPH_PATH = "docs/samples/pune_road_graph.graphml"
 
-# Fallback jitter/length, only used if the real road graph isn't loaded.
 COORD_JITTER = 0.003
 SYNTHETIC_LENGTH_RANGE_M = (300, 1500)
 EDGE_SEARCH_RADIUS_DEG = 0.012
@@ -123,7 +122,7 @@ def congestion_factor_for_time(now_utc: datetime) -> float:
         return depth * math.exp(-((hour - center_hour) ** 2) / (2 * width ** 2))
 
     dip = rush_hour_dip(9.5, 1.5, 0.55) + rush_hour_dip(19.5, 1.5, 0.50)
-    base_factor = 1.0 - min(dip, 0.75)  # never drop below 25% of free-flow speed
+    base_factor = 1.0 - min(dip, 0.75)  
 
     noise = random.uniform(-0.08, 0.08)
     return max(0.15, min(1.0, base_factor + noise))
@@ -219,7 +218,7 @@ def fire_batch(producer, latest_real_by_corridor: dict, edges_by_corridor: dict)
 def main():
     G = load_road_graph()
     edges_by_corridor = {}
-    latest_real_by_corridor = {}  # corridor name -> most recent real reading seen
+    latest_real_by_corridor = {}  
 
     print(f"Connecting to Kafka at {KAFKA_BOOTSTRAP_SERVERS}...")
     consumer = KafkaConsumer(
@@ -229,7 +228,7 @@ def main():
         enable_auto_commit=True,
         group_id=CONSUMER_GROUP,
         value_deserializer=lambda v: json.loads(v.decode("utf-8")),
-        consumer_timeout_ms=500,  # short, non-blocking-ish poll so the fire timer isn't delayed
+        consumer_timeout_ms=500,  
     )
     producer = KafkaProducer(
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
@@ -241,7 +240,7 @@ def main():
     print("Waiting for the first real reading before the first batch can fire...\n")
 
     total_sent = 0
-    last_fire = 0.0  # monotonic timestamp of the last fired batch
+    last_fire = 0.0  
     try:
         while not _stop:
             refresh_cache_from_kafka(consumer, latest_real_by_corridor, edges_by_corridor, G)
