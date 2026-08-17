@@ -51,8 +51,6 @@ TOMTOM_URL = "https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute
 
 GRAPH_PATH = "docs/samples/pune_road_graph.graphml"
 
-# Original hand-picked arterials -- all trunk/primary, kept as-is since
-# they're well-known, high-confidence readings.
 BASE_SEGMENTS = [
     {"name": "Hinjewadi Phase 1", "lat": 18.5913, "lng": 73.7389},
     {"name": "Kharadi - EON IT Park", "lat": 18.5510, "lng": 73.9430},
@@ -66,8 +64,6 @@ BASE_SEGMENTS = [
     {"name": "Warje", "lat": 18.4865, "lng": 73.7968},
 ]
 
-# Road classes with no representative in BASE_SEGMENTS -- filled in
-# automatically from the real road graph at startup, if available.
 TARGET_CLASSES = ["secondary", "tertiary", "residential"]
 
 TOMTOM_FREE_TIER_DAILY_CAP = 2500
@@ -108,7 +104,7 @@ def discover_additional_corridors() -> list:
     print(f"Loading road graph from {GRAPH_PATH} to discover additional corridors...")
     G = ox.load_graphml(GRAPH_PATH)
 
-    best_by_class = {}  # road class -> best candidate dict found so far
+    best_by_class = {}  
     for u, v, data in G.edges(data=True):
         hwy = data.get("highway")
         hwy = hwy[0] if isinstance(hwy, list) else hwy
@@ -118,7 +114,7 @@ def discover_additional_corridors() -> list:
         name = data.get("name")
         name = name[0] if isinstance(name, list) else name
         if not name:
-            continue  # skip unnamed edges -- want a real, reportable street name
+            continue  
 
         length_m = data.get("length", 0)
         current_best = best_by_class.get(hwy)
