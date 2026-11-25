@@ -86,7 +86,6 @@ def make_batch_writer():
                 continue
 
             ratio = avg_current / avg_free
-=
             segments[row["segment_name"]] = {
                 "current_speed_kmh": round(avg_current, 2),
                 "free_flow_speed_kmh": round(avg_free, 2),
